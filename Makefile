@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philo
+NAME = data
 SOURCES = main.c threads.c time.c utils.c
 OBJS = $(SOURCES:.c=.o)
 

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "philo.h"
+# include "data.h"
 
 pthread_mutex_t mutex;
 int mails = 0;
@@ -26,6 +26,7 @@ void* routine() {
 int main(int argc, char* argv[]) {
     pthread_t th[8];
     int i;
+	int	*res;
     pthread_mutex_init(&mutex, NULL);
 	i = 0;
     while (i < 8) 
@@ -40,7 +41,7 @@ int main(int argc, char* argv[]) {
 	i = 0;
     while (i < 8)
 	{
-        if (pthread_join(th[i], NULL) != 0) {
+        if (pthread_join(th[i], (void**) &res) != 0) {
             return 2;
         }
         printf("Thread %d has finished execution\n", i);
