@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/nfs/homes/amaucher/Core/datasophers",
-      "program": "/nfs/homes/amaucher/Core/datasophers/build/Debug/outDebug",
+      "cwd": "/nfs/homes/amaucher/Core/philosophers",
+      "program": "/nfs/homes/amaucher/Core/philosophers/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
