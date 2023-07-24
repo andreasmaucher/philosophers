@@ -34,14 +34,20 @@
 # define INIT_ERR_1 "ERROR WHILE INIT FORKS"
 //	time_err
 # define TIME_ERR "UNABLE TO RETRIVE UTC"
+//	philo_msg
+# define TAKE_FORKS "has taken a fork"
+# define THINKING "is thinking"
+# define SLEEPING "is sleeping"
+# define EATING "is eating"
+# define DIED "died"
 
-typedef enum e_data_state
+/* typedef enum e_data_state
 {
 	EATING = 0,
 	SLEEPING = 1,
 	THINKING = 2,
 	DEAD = 3,
-}	t_state;
+}	t_state; */
 
 struct	s_data;
 
@@ -51,11 +57,11 @@ typedef struct s_philo
 	int				id;
 	int			philo_id;
 	int			n_eat_times;
-	uint64_t	time_to_die2;
+	uint64_t	time_to_die;
 	pthread_t		t1;
 	int				status;
 	int				eating;
-	t_state		state;
+	//t_state		state;
 	pthread_mutex_t	lock;
 	pthread_mutex_t		*fork_l;
 	pthread_mutex_t		*fork_r;
@@ -71,7 +77,7 @@ typedef struct s_data
 	int			n_meals;
 	int			dead;
 	int			finished;
-	uint64_t	time_to_die;
+	uint64_t	death_time;
 	uint64_t	time_to_eat;
 	uint64_t	time_to_sleep;
 	uint64_t	start_time;

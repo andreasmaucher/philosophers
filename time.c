@@ -22,23 +22,3 @@
 
 // int gettimeofday(struct timeval *tv, struct timezone *tz);
 
-/* tv stands for timeval and returns current time; returns time in milliseconds*/
-long int	get_time(void)
-{
-	struct timeval	tv;
-	long int 		time_in_ms;
-
-	if (gettimeofday(&tv, NULL))
-		return (0);
-	time_in_ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-	return (time_in_ms);
-}
-
-int main()
-{
-    //example_1();
-    //example_2();
-	get_time();
-
-    return (0);
-}
