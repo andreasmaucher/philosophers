@@ -135,6 +135,7 @@ void	eat(t_philo *philo)
 	drop_forks(philo);
 }
 
+
 void	*monitor(void *data_pointer)
 {
 	t_philo	*philo;
@@ -200,20 +201,22 @@ void	*routine(void *philo_pointer)
 	return ((void *)0);
 }
 
-/* initializing & creating threads; if n_meals parameter is set monitor
-thread is created o check when all philos have eaten n_meals*/
+/* creating threads for each philosopher while executing the routine function;
+after the routine is finished the threads are joined;
+if n_meals parameter is set monitorthread is created o check when all philos have
+eaten n_meals*/
 int	handle_threads(t_data *data)
 {
 	int			i;
 	pthread_t	t0;
 
-	i = -1;
 	data->start_time = get_time(); //! DO I NEED TO START COUNTING HERE OR AFTER CREATING THE THREADS
 	if (data->n_meals > 0)
 	{
-		if (pthread_create(&t0, NULL, &monitor, &data->philo[0]))
+		if (pthread_create(&t0, NULL, &monitor, &data->philo[0])) //! probably wrong to only monitor the state of the first philo
 			return (error(TH_ERR, data));
 	}
+	i = -1;
 	while (++i < data->n_philos)
 	{
 		if (pthread_create(&data->id[i], NULL, &routine, &data->philo[i]))
