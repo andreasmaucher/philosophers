@@ -10,10 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h> // printf
-#include <sys/time.h> // time
-#include <stdint.h> // uint64_t
-#include <unistd.h> // usleep
+# include "philo.h"
 
 // struct timeval {
 //     time_t      tv_sec;     // seconds
@@ -22,3 +19,14 @@
 
 // int gettimeofday(struct timeval *tv, struct timezone *tz);
 
+/* tv stands for timeval and returns current time; returns time in milliseconds*/
+t_ms	get_time(void)
+{
+	struct timeval	tv;
+	t_ms 		time_in_ms;
+
+	if (gettimeofday(&tv, NULL))
+		return (0);
+	time_in_ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	return (time_in_ms);
+}

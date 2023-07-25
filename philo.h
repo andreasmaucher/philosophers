@@ -51,13 +51,15 @@
 
 struct	s_data;
 
+typedef long			t_ms;
+
 typedef struct s_philo
 {
 	struct s_data	*data;
 	int				id;
 	int			philo_id;
 	int			n_eat_times;
-	uint64_t	time_to_die;
+	t_ms		death_time;
 	pthread_t		t1;
 	int				status;
 	int				eating;
@@ -77,14 +79,20 @@ typedef struct s_data
 	int			n_meals;
 	int			dead;
 	int			finished;
-	uint64_t	death_time;
-	uint64_t	time_to_eat;
-	uint64_t	time_to_sleep;
-	uint64_t	start_time;
+	t_ms	time_to_die;
+	t_ms	time_to_eat;
+	t_ms	time_to_sleep;
+	t_ms	start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	write;
 
 }	t_data;
+
+t_ms	get_time(void);
+int	ft_atoi(const char *nptr);
+
+/*initialization*/
+int init_structs(t_data *data, int ac, char **av);
 
 #endif

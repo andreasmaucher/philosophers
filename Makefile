@@ -10,8 +10,8 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = data
-SOURCES = main.c threads.c time.c utils.c
+NAME = philo
+SOURCES = main.c threads.c time.c utils.c initialization.c
 OBJS = $(SOURCES:.c=.o)
 
 CC = cc -g -pthread
