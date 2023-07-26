@@ -63,7 +63,7 @@ int	ft_usleep(t_ms time)
 
 	start = get_time();
 	while ((get_time() - start) < time)
-		usleep(time / 10);
+		usleep(1000);
 	return (0);
 }
 
@@ -95,11 +95,11 @@ void	messages(char *str, t_philo *philo)
 
 void	take_forks(t_philo *philo)
 {
-	/* pthread_mutex_lock(philo->fork_r);
+	pthread_mutex_lock(philo->fork_r);
 	messages(TAKE_FORKS, philo);
 	pthread_mutex_lock(philo->fork_l);
-	messages(TAKE_FORKS, philo); */
-	if (philo->id % 2 == 1) // Odd philosopher
+	messages(TAKE_FORKS, philo);
+	/* if (philo->id % 2 == 1) // Odd philosopher
     {
         pthread_mutex_lock(philo->fork_l);
         messages(TAKE_FORKS, philo);
@@ -110,13 +110,15 @@ void	take_forks(t_philo *philo)
         pthread_mutex_lock(philo->fork_r);
         messages(TAKE_FORKS, philo);
         pthread_mutex_lock(philo->fork_l);
-    }
+    } */
 }
 
 void	drop_forks(t_philo *philo)
 {
 	pthread_mutex_unlock(philo->fork_l);
+	printf("L FORK DROPPED\n");
 	pthread_mutex_unlock(philo->fork_r); //!
+	printf("R FORK DROPPED\n");
 	messages(SLEEPING, philo);
 	ft_usleep(philo->data->time_to_sleep);
 }
@@ -187,10 +189,14 @@ void	*routine(void *philo_pointer)
 {
 	t_philo	*philo;
 
+	usleep(100);
 	philo = (t_philo *) philo_pointer; //! WHY
+	printf("Philo->death_time_before%ld\n", philo->death_time);
 	philo->death_time = philo->data->time_to_die + get_time();
+	printf("Philo->death_time_after%ld\n", philo->death_time);
 	if (pthread_create(&philo->t1, NULL, &supervisor, (void *)philo))
 		return ((void *)1);
+	printf("SUPERVISOR CREATED\n");
 	while (philo->data->dead == 0)
 	{
 		eat(philo);
@@ -211,23 +217,27 @@ int	handle_threads(t_data *data)
 	pthread_t	t0;
 
 	data->start_time = get_time(); //! DO I NEED TO START COUNTING HERE OR AFTER CREATING THE THREADS
+	//! this needs to be a while loop or do I only need it when given number of meals?
 	if (data->n_meals > 0)
 	{
+		printf("MONITOR STARTED");
 		if (pthread_create(&t0, NULL, &monitor, &data->philo[0])) //! probably wrong to only monitor the state of the first philo
 			return (error(TH_ERR, data));
 	}
 	i = -1;
+	//! can I somehow implement, that routine only starts when all threads are running?
 	while (++i < data->n_philos)
 	{
 		if (pthread_create(&data->id[i], NULL, &routine, &data->philo[i]))
 			return (error(TH_ERR, data));
-		ft_usleep(100); //! necessary?
+		printf("THREAD STARTED %d\n", i);
 	}
 	i = -1;
 	while (++i < data->n_philos)
 	{
 		if (pthread_join(data->id[i], NULL))
 			return (error(JOIN_ERR, data));
+		printf("THREAD JOINED %d\n", i);
 	}
 	return (0);
 }
