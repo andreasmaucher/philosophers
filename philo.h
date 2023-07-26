@@ -98,8 +98,17 @@ typedef struct s_data
 
 }	t_data;
 
+int	error(char *str, t_data *data);
+
+/*time*/
 t_ms	get_time(void);
+
+/*utils*/
 int	ft_atoi(const char *nptr);
+int	ft_usleep(t_ms time);
+int	ft_strcmp(char *s1, char *s2);
+int	input_checker(char **argv);
+
 
 /*initialization*/
 int init_structs(t_data *data, int ac, char **av);
