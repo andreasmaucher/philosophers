@@ -21,6 +21,14 @@
 # include <stdint.h> // uint64_t
 # include <unistd.h> // usleep
 
+// Define ANSI escape codes for colors
+#define RED     "\x1b[31m"
+#define GREEN   "\x1b[32;1m" 
+#define YELLOW  "\x1b[33;1m"
+#define BLUE    "\x1b[34;1m" 
+#define GREY 	"\x1b[90m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
 //	alloc_err
 # define ALLOC_ERR_1 "ERROR WHILE ALLOCATING THREADS IDs"
 # define ALLOC_ERR_3 "ERROR WHILE ALLOCATING PHILOS"
@@ -35,11 +43,12 @@
 //	time_err
 # define TIME_ERR "UNABLE TO RETRIVE UTC"
 //	philo_msg
-# define TAKE_FORKS "has taken a fork"
-# define THINKING "is thinking"
-# define SLEEPING "is sleeping"
-# define EATING "is eating"
-# define DIED "died"
+/*ANSI_COLOR_RESET ensures, that the next message is uncolored if not specified otherwise*/
+# define TAKE_FORKS "has taken a fork" ANSI_COLOR_RESET
+# define THINKING   "is thinking" ANSI_COLOR_RESET
+# define SLEEPING   "is sleeping" ANSI_COLOR_RESET
+# define EATING     "is eating" ANSI_COLOR_RESET
+# define DIED       "died" ANSI_COLOR_RESET
 
 /* typedef enum e_data_state
 {

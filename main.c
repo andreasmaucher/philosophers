@@ -77,7 +77,7 @@ int	ft_strcmp(char *s1, char *s2)
 	return (*(char *)s1 - *(char *)s2);
 }
 
-void	messages(char *str, t_philo *philo)
+/* void	messages(char *str, t_philo *philo)
 {
 	t_ms	time;
 
@@ -91,14 +91,33 @@ void	messages(char *str, t_philo *philo)
 	if (!philo->data->dead)
 		printf("%lu %d %s\n", time, philo->id, str);
 	pthread_mutex_unlock(&philo->data->write);
+} */
+
+// Updated messages function with color parameter
+void messages(char *color, char *str, t_philo *philo)
+{
+    t_ms time;
+
+    pthread_mutex_lock(&philo->data->write);
+    time = get_time() - philo->data->start_time;
+    if (ft_strcmp(DIED, str) == 0 && philo->data->dead == 0)
+    {
+        printf("%s%lu %d %s\n", color, time, philo->id, str);
+        philo->data->dead = 1;
+    }
+    else if (!philo->data->dead)
+    {
+        printf("%s%lu %d %s\n", color, time, philo->id, str);
+    }
+    pthread_mutex_unlock(&philo->data->write);
 }
 
 void	take_forks(t_philo *philo)
 {
 	pthread_mutex_lock(philo->fork_r);
-	messages(TAKE_FORKS, philo);
+	messages(YELLOW, TAKE_FORKS, philo);
 	pthread_mutex_lock(philo->fork_l);
-	messages(TAKE_FORKS, philo);
+	messages(YELLOW, TAKE_FORKS, philo);
 	/* if (philo->id % 2 == 1) // Odd philosopher
     {
         pthread_mutex_lock(philo->fork_l);
@@ -119,7 +138,7 @@ void	drop_forks(t_philo *philo)
 	printf("L FORK DROPPED\n");
 	pthread_mutex_unlock(philo->fork_r); //!
 	printf("R FORK DROPPED\n");
-	messages(SLEEPING, philo);
+	messages(GREY, SLEEPING, philo);
 	ft_usleep(philo->data->time_to_sleep);
 }
 
@@ -129,7 +148,7 @@ void	eat(t_philo *philo)
 	pthread_mutex_lock(&philo->lock);
 	philo->eating = 1;
 	philo->death_time = get_time() + philo->data->time_to_die;
-	messages(EATING, philo);
+	messages(GREEN, EATING, philo);
 	philo->n_eat_times++;
 	ft_usleep(philo->data->time_to_eat);
 	philo->eating = 0;
@@ -166,7 +185,7 @@ void	*supervisor(void *philo_pointer)
 	{
 		pthread_mutex_lock(&philo->lock);
 		if (get_time() >= philo->death_time && philo->eating == 0)
-			messages(DIED, philo);
+			messages(RED, DIED, philo);
 		if (philo->n_eat_times == philo->data->n_meals)
 		{
 			pthread_mutex_lock(&philo->data->lock);
@@ -200,7 +219,7 @@ void	*routine(void *philo_pointer)
 	while (philo->data->dead == 0)
 	{
 		eat(philo);
-		messages(THINKING, philo);
+		messages(BLUE, THINKING, philo);
 	}
 	if (pthread_join(philo->t1, NULL)) //!
 		return ((void *)1);
