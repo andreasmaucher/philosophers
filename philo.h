@@ -72,7 +72,6 @@ typedef struct s_philo
 	pthread_t		t1;
 	int				status;
 	int				eating;
-	//t_state		state;
 	pthread_mutex_t	lock;
 	pthread_mutex_t		*fork_l;
 	pthread_mutex_t		*fork_r;
