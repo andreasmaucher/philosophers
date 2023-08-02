@@ -12,7 +12,8 @@
 
 # include "philo.h"
 
-/* tv stands for timeval and returns current time; returns time in milliseconds*/
+/* tv stands for timeval and returns current time; returns time 
+in milliseconds*/
 t_ms	get_time(void)
 {
 	struct timeval	tv;

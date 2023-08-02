@@ -16,8 +16,8 @@ int	error(char *str, t_data *data)
 {
 	data = 0;
 	printf("%s\n", str);
-	//if (data)
-		//ft_exit(data);
+	if (data)
+		ft_exit(data);
 	return (1);
 }
 
