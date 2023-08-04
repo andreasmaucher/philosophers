@@ -13,7 +13,8 @@
 # include "philo.h"
 
 /* initializing the philo struct; id is incremented by +1 so that 
-the id of the first philo is 1*/
+the id of the first philo is 1; memory allocation already happened in the 
+init data struct function below*/
 int	init_philo_struct(t_data *data)
 {
 	int	i;
@@ -27,7 +28,7 @@ int	init_philo_struct(t_data *data)
 		data->philo[i].n_eat_times = 0;
 		data->philo[i].eating = 0;
 		data->philo[i].status = 0;
-		pthread_mutex_init(&data->philo[i].lock, NULL); //! MUTEXES PHILO->LOCK
+		pthread_mutex_init(&data->philo[i].lock, NULL); //! MUTEXES PHILO->LOCK in a loop!
 		i++; //! Why acces via data-> and not directly via philo struct?!
 	}
 	return (0);
@@ -48,13 +49,16 @@ int	init_forks(t_data *data)
 {
 	int	i;
 
-	i = -1;
-	while (++i < data->n_philos)
+	i = 0;
+	while (i < data->n_philos)
+	{
 		pthread_mutex_init(&data->forks[i], NULL); //! MUTEXES FOR EACH FORK
+		i++;
+	}
 	i = 0;
 	data->philo[0].fork_l = &data->forks[0];
 	data->philo[0].fork_r = &data->forks[data->n_philos - 1];
-	i = 1;
+	i++;
 	while (i < data->n_philos)
 	{
 		data->philo[i].fork_l = &data->forks[i];
@@ -77,18 +81,18 @@ int init_data_struct(t_data *data, int ac, char **av)
 		data->n_meals = ft_atoi(av[5]);
 	else
 		data->n_meals = -1;
-	data->start_time = get_time();
+	data->start_time = 0;
 	data->dead = 0;
 	data->finished = 0;
 	data->id = malloc(sizeof(pthread_t) * data->n_philos);
-	if (!data->id)
-		return (1);
+	if (data->id == NULL)
+		return (MEM_ALLOC_ERROR);
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->n_philos);
-	if (!data->forks)
-		return (1);
+	if (data->forks == NULL)
+		return (MEM_ALLOC_ERROR);
 	data->philo = malloc(sizeof(t_philo) * data->n_philos);
-	if (!data->philo)
-		return (1);
+	if (data->philo == NULL)
+		return (MEM_ALLOC_ERROR);
 	pthread_mutex_init(&data->write, NULL); //! MUTEX DATA->WRITE
 	pthread_mutex_init(&data->lock, NULL); //! MUTEX DATA->LOCK
 	return (0);

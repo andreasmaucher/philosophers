@@ -50,6 +50,12 @@
 # define EATING     "is eating" ANSI_COLOR_RESET
 # define DIED       "died" ANSI_COLOR_RESET
 
+enum ErrorCodes {
+    MEM_ALLOC_ERROR,
+	THREAD_ERR,
+	THREAD_JOIN_ERR,
+};
+
 /* typedef enum e_data_state
 {
 	EATING = 0,

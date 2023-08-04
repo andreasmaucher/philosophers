@@ -16,8 +16,8 @@ int	error(char *str, t_data *data)
 {
 	data = 0;
 	printf("%s\n", str);
-	if (data)
-		ft_exit(data);
+	//if (data)
+	//	ft_exit(data);
 	return (1);
 }
 
@@ -138,10 +138,10 @@ void	*routine(void *philo_pointer)
 
 	usleep(100);
 	philo = (t_philo *) philo_pointer; //! WHY
-	printf("Philo->death_time_before%ld\n", philo->death_time);
+	printf("Philo->death_time_before%ld\n", philo->death_time); //! time did not decrease since first assignment
 	philo->death_time = philo->data->time_to_die + get_time();
 	printf("Philo->death_time_after%ld\n", philo->death_time);
-	if (pthread_create(&philo->t1, NULL, &supervisor, (void *)philo))
+	if (pthread_create(&philo->t1, NULL, &supervisor, (void *)philo)) //! whats thisfor
 		return ((void *)1);
 	printf("SUPERVISOR CREATED\n");
 	while (philo->data->dead == 0)
@@ -154,37 +154,41 @@ void	*routine(void *philo_pointer)
 	return ((void *)0);
 }
 
-/* creating threads for each philosopher while executing the routine function;
-after the routine is finished the threads are joined;
-if n_meals parameter is set monitorthread is created o check when all philos have
-eaten n_meals*/
+/* 
+1. setting the start time
+2. creating threads for each philosopher while executing the routine function
+(if n_meals parameter is set a monitor thread is created o check when all philos have
+eaten n_meals)
+3. after the routine is finished the threads are joined;
+*/
 int	handle_threads(t_data *data)
 {
 	int			i;
-	pthread_t	t0;
+	pthread_t	monitor_thread;
 
-	data->start_time = get_time(); //! DO I NEED TO START COUNTING HERE OR AFTER CREATING THE THREADS
-	//! this needs to be a while loop or do I only need it when given number of meals?
-	if (data->n_meals > 0)
+	data->start_time = get_time();
+	if (data->n_meals > 0) //! maybe i could do this differently?
 	{
 		printf("MONITOR STARTED");
-		if (pthread_create(&t0, NULL, &monitor, &data->philo[0])) //! probably wrong to only monitor the state of the first philo
-			return (error(TH_ERR, data));
+		if (pthread_create(&monitor_thread, NULL, &monitor, &data->philo[0]))
+			return (THREAD_ERR);
 	}
-	i = -1;
+	i = 0;
 	//! can I somehow implement, that routine only starts when all threads are running?
-	while (++i < data->n_philos)
+	while (i < data->n_philos)
 	{
 		if (pthread_create(&data->id[i], NULL, &routine, &data->philo[i]))
-			return (error(TH_ERR, data));
+			return (THREAD_ERR);
 		printf("THREAD STARTED %d\n", i);
+		i++;
 	}
-	i = -1;
-	while (++i < data->n_philos)
+	i = 0;
+	while (i < data->n_philos)
 	{
 		if (pthread_join(data->id[i], NULL))
-			return (error(JOIN_ERR, data));
+			return (THREAD_JOIN_ERR);
 		printf("THREAD JOINED %d\n", i);
+		i++;
 	}
 	return (0);
 }
