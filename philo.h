@@ -17,17 +17,25 @@
 # include <stdlib.h>
 # include <stdbool.h>
 # include <pthread.h>
-# include <sys/time.h> // time
-# include <stdint.h> // uint64_t
-# include <unistd.h> // usleep
+# include <sys/time.h>
+# include <stdint.h>
+# include <unistd.h>
 
-// Define ANSI escape codes for colors
+// Define ANSI codes for colors
 #define RED     "\x1b[31m"
 #define GREEN   "\x1b[32;1m" 
 #define YELLOW  "\x1b[33;1m"
 #define BLUE    "\x1b[34;1m" 
 #define GREY 	"\x1b[90m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
+
+//	philo_msg
+/*ANSI_COLOR_RESET ensures, that the next message is uncolored if not specified otherwise*/
+# define TAKE_FORKS "has taken a fork" ANSI_COLOR_RESET
+# define THINKING   "is thinking" ANSI_COLOR_RESET
+# define SLEEPING   "is sleeping" ANSI_COLOR_RESET
+# define EATING     "is eating" ANSI_COLOR_RESET
+# define DIED       "died" ANSI_COLOR_RESET
 
 //	alloc_err
 # define ALLOC_ERR_1 "ERROR WHILE ALLOCATING THREADS IDs"
@@ -42,13 +50,6 @@
 # define INIT_ERR_1 "ERROR WHILE INIT FORKS"
 //	time_err
 # define TIME_ERR "UNABLE TO RETRIVE UTC"
-//	philo_msg
-/*ANSI_COLOR_RESET ensures, that the next message is uncolored if not specified otherwise*/
-# define TAKE_FORKS "has taken a fork" ANSI_COLOR_RESET
-# define THINKING   "is thinking" ANSI_COLOR_RESET
-# define SLEEPING   "is sleeping" ANSI_COLOR_RESET
-# define EATING     "is eating" ANSI_COLOR_RESET
-# define DIED       "died" ANSI_COLOR_RESET
 
 enum ErrorCodes {
     MEM_ALLOC_ERROR,
@@ -75,7 +76,7 @@ typedef struct s_philo
 	int			philo_id;
 	int			n_eat_times;
 	t_ms		death_time;
-	pthread_t		t1;
+	pthread_t		supervisor;
 	int				status;
 	int				eating;
 	pthread_mutex_t	lock;

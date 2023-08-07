@@ -12,6 +12,7 @@
 
 # include "philo.h"
 
+/* own implementation of the atoi function */
 int	ft_atoi(const char *nptr)
 {
 	int	i;
@@ -39,33 +40,27 @@ int	ft_atoi(const char *nptr)
 	return (res * sign);
 }
 
-int	ft_usleep(t_ms time)
+/* my own implementation of the strcmp function */
+int ft_strcmp(char *s1, char *s2)
 {
-	t_ms	start;
-
-	start = get_time();
-	while ((get_time() - start) < time)
-		usleep(1000);
-	return (0);
-}
-
-int	ft_strcmp(char *s1, char *s2)
-{
-	while (*s1 != '\0' && (*s1 == *s2))
-	{
-		s1++;
-		s2++;
+	int i = 0;
+	
+	while(s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i])
+	{	
+		i++;
 	}
-	return (*(char *)s1 - *(char *)s2);
+	return (s1[i] - s2[i]);
 }
 
-int	input_checker(char **argv)
+
+//! doesnt work right now
+/* int	check_input(char **av)
 {
 	int	i;
 	int	j;
 
 	i = 1;
-	while (argv[i])
+	while (av[i])
 	{
 		j = 0;
 		while (argv[i][j])
@@ -82,4 +77,4 @@ int	input_checker(char **argv)
 		i++;
 	}
 	return (0);
-}
+} */

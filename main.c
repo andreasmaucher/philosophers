@@ -12,6 +12,7 @@
 
 # include "philo.h"
 
+//! FIX
 int	error(char *str, t_data *data)
 {
 	data = 0;
@@ -40,6 +41,7 @@ void messages(char *color, char *str, t_philo *philo)
     pthread_mutex_unlock(&philo->data->write);
 }
 
+//! try with adjustments
 void	take_forks(t_philo *philo)
 {
 	pthread_mutex_lock(philo->fork_r);
@@ -60,16 +62,16 @@ void	take_forks(t_philo *philo)
     } */
 }
 
+/* unlocking both forks and setting the philo to sleep */
 void	drop_forks(t_philo *philo)
 {
 	pthread_mutex_unlock(philo->fork_l);
-	printf("L FORK DROPPED\n");
-	pthread_mutex_unlock(philo->fork_r); //!
-	printf("R FORK DROPPED\n");
+	pthread_mutex_unlock(philo->fork_r);
 	messages(GREY, SLEEPING, philo);
 	ft_usleep(philo->data->time_to_sleep);
 }
 
+/* only mutex the usage, but holding at the same time is possible? */
 void	eat(t_philo *philo)
 {
 	take_forks(philo);
@@ -129,19 +131,19 @@ void	*supervisor(void *philo_pointer)
 /* supervisor routine that checks if the philo had died or finished eating;
 dead = 0 is the main loop, as long as all philos are alive philos will eat;
 Once the loop is exited the function waits 
-for the supervisor thread to finish its job using pthread_join(philo->t1, 
+for the supervisor thread to finish its job using pthread_join(philo->supervisor, 
 NULL). This ensures that the main thread waits for the supervisor thread to 
 complete before proceeding*/
 void	*routine(void *philo_pointer)
 {
 	t_philo	*philo;
 
-	usleep(100);
+	//usleep(100);
 	philo = (t_philo *) philo_pointer; //! WHY
 	printf("Philo->death_time_before%ld\n", philo->death_time); //! time did not decrease since first assignment
 	philo->death_time = philo->data->time_to_die + get_time();
 	printf("Philo->death_time_after%ld\n", philo->death_time);
-	if (pthread_create(&philo->t1, NULL, &supervisor, (void *)philo)) //! whats thisfor
+	if (pthread_create(&philo->supervisor, NULL, &supervisor, (void *)philo)) //! whats thisfor
 		return ((void *)1);
 	printf("SUPERVISOR CREATED\n");
 	while (philo->data->dead == 0)
@@ -149,7 +151,7 @@ void	*routine(void *philo_pointer)
 		eat(philo);
 		messages(BLUE, THINKING, philo);
 	}
-	if (pthread_join(philo->t1, NULL)) //!
+	if (pthread_join(philo->supervisor, NULL)) //!
 		return ((void *)1);
 	return ((void *)0);
 }
@@ -193,6 +195,7 @@ int	handle_threads(t_data *data)
 	return (0);
 }
 
+//! input checks!
 int	main(int ac, char *av[])
 {
 	t_data data;
