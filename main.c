@@ -22,7 +22,11 @@ int	error(char *str, t_data *data)
 	return (1);
 }
 
-// Updated messages function with color parameter
+/* This function takes 3 parameters in the following format:
+color, action string e.g. 'TAKE_FORKS', philo;
+essentially it checks if a philo died or didn't die and writes 
+a message to the terminal based on that condition
+*/
 void messages(char *color, char *str, t_philo *philo)
 {
     t_ms time;
@@ -86,19 +90,19 @@ void	eat(t_philo *philo)
 	drop_forks(philo);
 }
 
-void	*monitor(void *data_pointer)
+/* only function where the philo->data->dead value is changed to 1, 
+except for the messages function where it sets it if its still 0
+WHY???????????????????????????????????????????????????????????????? */
+void	*meals_monitor(void *data_pointer)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *) data_pointer;
-	//pthread_mutex_lock(&philo->data->write);
-	//printf("data val: %d", philo->data->dead);
-	//pthread_mutex_unlock(&philo->data->write);
 	while (philo->data->dead == 0)
 	{
 		pthread_mutex_lock(&philo->lock);
-		if (philo->data->finished >= philo->data->n_philos)
-			philo->data->dead = 1;
+		if (philo->data->finished >= philo->data->n_philos) //! is this just used as a terminate condition without somebody actually dying?
+			philo->data->dead = 1; //! meaning I only do this if they ate enough meals?!
 		pthread_mutex_unlock(&philo->lock);
 	}
 	return ((void *)0);
@@ -116,12 +120,12 @@ void	*supervisor(void *philo_pointer)
 	while (philo->data->dead == 0)
 	{
 		pthread_mutex_lock(&philo->lock);
-		if (get_time() >= philo->death_time && philo->eating == 0)
+		if (get_time() >= philo->death_time && philo->eating == 0) //! PRINT THIS!
 			messages(RED, DIED, philo);
 		if (philo->n_eat_times == philo->data->n_meals)
 		{
 			pthread_mutex_lock(&philo->data->lock);
-			philo->data->finished++;
+			philo->data->finished++; //! only initialized here
 			philo->n_eat_times++;
 			pthread_mutex_unlock(&philo->data->lock);
 		}
@@ -159,7 +163,7 @@ void	*routine(void *philo_pointer)
 /* 
 1. setting the start time
 2. creating threads for each philosopher while executing the routine function
-(if n_meals parameter is set a monitor thread is created o check when all philos have
+(if n_meals parameter is set a meals_monitor thread is created o check when all philos have
 eaten n_meals); the first argument is to store the id of the thread & the last argument
 is a pointer to the data that gets passed
 3. after the routine is finished the threads are joined;
@@ -167,12 +171,12 @@ is a pointer to the data that gets passed
 int	handle_threads(t_data *data)
 {
 	int			i;
-	pthread_t	monitor_thread;
+	pthread_t	meals_monitor_thread;
 
 	data->start_time = get_time();
 	if (data->n_meals > 0)
 	{
-		if (pthread_create(&monitor_thread, NULL, &monitor, &data->philo[0]))
+		if (pthread_create(&meals_monitor_thread, NULL, &meals_monitor, &data->philo[0]))
 			return (THREAD_ERR);
 	}
 	i = 0;
