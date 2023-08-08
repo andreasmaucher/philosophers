@@ -80,21 +80,20 @@ void	eat(t_philo *philo)
 	philo->death_time = get_time() + philo->data->time_to_die;
 	messages(GREEN, EATING, philo);
 	philo->n_eat_times++;
-	ft_usleep(philo->data->time_to_eat);
+	//ft_usleep(philo->data->time_to_eat); //! Purpose?
 	philo->eating = 0;
 	pthread_mutex_unlock(&philo->lock);
 	drop_forks(philo);
 }
-
 
 void	*monitor(void *data_pointer)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *) data_pointer;
-	pthread_mutex_lock(&philo->data->write);
-	printf("data val: %d", philo->data->dead);
-	pthread_mutex_unlock(&philo->data->write);
+	//pthread_mutex_lock(&philo->data->write);
+	//printf("data val: %d", philo->data->dead);
+	//pthread_mutex_unlock(&philo->data->write);
 	while (philo->data->dead == 0)
 	{
 		pthread_mutex_lock(&philo->lock);
@@ -105,7 +104,10 @@ void	*monitor(void *data_pointer)
 	return ((void *)0);
 }
 
-/*responsible for monitoring philos state*/
+/*responsible for monitoring philos state;
+Check 1: if current time has exceeded the the death_time of the philo and if 
+the philo is currently not eating -> is so DIED;
+Check 2: checks if one philo has completed the required amount of meals*/
 void	*supervisor(void *philo_pointer)
 {
 	t_philo	*philo;
@@ -125,7 +127,7 @@ void	*supervisor(void *philo_pointer)
 		}
 		pthread_mutex_unlock(&philo->lock);
 	}
-	return ((void *)0);
+	return (NULL);
 }
 
 /* supervisor routine that checks if the philo had died or finished eating;
@@ -133,34 +135,33 @@ dead = 0 is the main loop, as long as all philos are alive philos will eat;
 Once the loop is exited the function waits 
 for the supervisor thread to finish its job using pthread_join(philo->supervisor, 
 NULL). This ensures that the main thread waits for the supervisor thread to 
-complete before proceeding*/
+complete before proceeding.
+@param philo_pointer expects a pointer to a philo struct to identify each 
+distinct philosopher */
 void	*routine(void *philo_pointer)
 {
 	t_philo	*philo;
-
-	//usleep(100);
-	philo = (t_philo *) philo_pointer; //! WHY
-	printf("Philo->death_time_before%ld\n", philo->death_time); //! time did not decrease since first assignment
+	
+	philo = (t_philo *) philo_pointer;
 	philo->death_time = philo->data->time_to_die + get_time();
-	printf("Philo->death_time_after%ld\n", philo->death_time);
-	if (pthread_create(&philo->supervisor, NULL, &supervisor, (void *)philo)) //! whats thisfor
-		return ((void *)1);
-	printf("SUPERVISOR CREATED\n");
+	if (pthread_create(&philo->supervisor, NULL, &supervisor, &philo))
+		return (NULL);
 	while (philo->data->dead == 0)
 	{
 		eat(philo);
 		messages(BLUE, THINKING, philo);
 	}
-	if (pthread_join(philo->supervisor, NULL)) //!
-		return ((void *)1);
-	return ((void *)0);
+	if (pthread_join(philo->supervisor, NULL))
+		return (NULL);
+	return (0);
 }
 
 /* 
 1. setting the start time
 2. creating threads for each philosopher while executing the routine function
 (if n_meals parameter is set a monitor thread is created o check when all philos have
-eaten n_meals)
+eaten n_meals); the first argument is to store the id of the thread & the last argument
+is a pointer to the data that gets passed
 3. after the routine is finished the threads are joined;
 */
 int	handle_threads(t_data *data)
@@ -169,19 +170,16 @@ int	handle_threads(t_data *data)
 	pthread_t	monitor_thread;
 
 	data->start_time = get_time();
-	if (data->n_meals > 0) //! maybe i could do this differently?
+	if (data->n_meals > 0)
 	{
-		printf("MONITOR STARTED");
 		if (pthread_create(&monitor_thread, NULL, &monitor, &data->philo[0]))
 			return (THREAD_ERR);
 	}
 	i = 0;
-	//! can I somehow implement, that routine only starts when all threads are running?
 	while (i < data->n_philos)
 	{
 		if (pthread_create(&data->id[i], NULL, &routine, &data->philo[i]))
 			return (THREAD_ERR);
-		printf("THREAD STARTED %d\n", i);
 		i++;
 	}
 	i = 0;
@@ -189,7 +187,6 @@ int	handle_threads(t_data *data)
 	{
 		if (pthread_join(data->id[i], NULL))
 			return (THREAD_JOIN_ERR);
-		printf("THREAD JOINED %d\n", i);
 		i++;
 	}
 	return (0);
