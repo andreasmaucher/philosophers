@@ -115,8 +115,14 @@ int	ft_usleep(t_ms time);
 int	ft_strcmp(char *s1, char *s2);
 int	input_checker(char **argv);
 
+/*threads*/
+int	handle_threads(t_data *data);
 
 /*initialization*/
 int init_structs(t_data *data, int ac, char **av);
+
+/*main*/
+void	*routine(void *philo_pointer);
+void	*meals_monitor(void *data_pointer);
 
 #endif
