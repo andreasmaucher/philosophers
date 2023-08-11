@@ -12,16 +12,6 @@
 
 # include "philo.h"
 
-//! FIX
-int	error(char *str, t_data *data)
-{
-	data = 0;
-	printf("%s\n", str);
-	//if (data)
-	//	ft_exit(data);
-	return (1);
-}
-
 /* This function takes 3 parameters in the following format:
 color, action string e.g. 'TAKE_FORKS', philo;
 essentially it checks if a philo died or didn't die and writes 
@@ -38,41 +28,11 @@ void messages(char *color, char *str, t_philo *philo)
         printf("%s%lu %d %s\n", color, time, philo->id, str);
         philo->data->dead = 1;
     }
-    else if (!philo->data->dead)
+    else if (philo->data->dead == 0)
     {
         printf("%s%lu %d %s\n", color, time, philo->id, str);
     }
     pthread_mutex_unlock(&philo->data->write);
-}
-
-//! try with adjustments
-void	take_forks(t_philo *philo)
-{
-	pthread_mutex_lock(philo->fork_r);
-	messages(YELLOW, TAKE_FORKS, philo);
-	pthread_mutex_lock(philo->fork_l);
-	messages(YELLOW, TAKE_FORKS, philo);
-	/* if (philo->id % 2 == 1) // Odd philosopher
-    {
-        pthread_mutex_lock(philo->fork_l);
-        messages(TAKE_FORKS, philo);
-        pthread_mutex_lock(philo->fork_r);
-    }
-    else // Even philosopher
-    {
-        pthread_mutex_lock(philo->fork_r);
-        messages(TAKE_FORKS, philo);
-        pthread_mutex_lock(philo->fork_l);
-    } */
-}
-
-/* unlocking both forks and setting the philo to sleep */
-void	drop_forks(t_philo *philo)
-{
-	pthread_mutex_unlock(philo->fork_l);
-	pthread_mutex_unlock(philo->fork_r);
-	messages(GREY, SLEEPING, philo);
-	ft_usleep(philo->data->time_to_sleep);
 }
 
 /* only mutex the usage, but holding at the same time is possible? */
@@ -110,7 +70,7 @@ void	*meals_monitor(void *data_pointer)
 
 /*responsible for monitoring philos state;
 Check 1: if current time has exceeded the the death_time of the philo and if 
-the philo is currently not eating -> is so DIED;
+the philo is currently not eating -> DIED;
 Check 2: checks if one philo has completed the required amount of meals*/
 void	*supervisor(void *philo_pointer)
 {

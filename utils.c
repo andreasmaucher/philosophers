@@ -52,6 +52,16 @@ int ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
+//! FIX
+int	error(char *str, t_data *data)
+{
+	data = 0;
+	printf("%s\n", str);
+	//if (data)
+	//	ft_exit(data);
+	return (1);
+}
+
 
 //! doesnt work right now
 /* int	check_input(char **av)

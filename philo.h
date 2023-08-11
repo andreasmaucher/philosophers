@@ -109,11 +109,16 @@ int	error(char *str, t_data *data);
 /*time*/
 t_ms	get_time(void);
 
+/*actions*/
+void	take_forks(t_philo *philo);
+void	drop_forks(t_philo *philo);
+
 /*utils*/
 int	ft_atoi(const char *nptr);
 int	ft_usleep(t_ms time);
 int	ft_strcmp(char *s1, char *s2);
 int	input_checker(char **argv);
+int	error(char *str, t_data *data);
 
 /*threads*/
 int	handle_threads(t_data *data);
@@ -124,5 +129,6 @@ int init_structs(t_data *data, int ac, char **av);
 /*main*/
 void	*routine(void *philo_pointer);
 void	*meals_monitor(void *data_pointer);
+void messages(char *color, char *str, t_philo *philo);
 
 #endif
