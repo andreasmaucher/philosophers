@@ -15,7 +15,9 @@
 /* This function takes 3 parameters in the following format:
 color, action string e.g. 'TAKE_FORKS', philo;
 essentially it checks if a philo died or didn't die and writes 
-a message to the terminal based on that condition
+a message to the terminal based on that condition;
+1 Check: if message = DIED -> set philo to dead;
+2 Check: if philo is not dead -> print philos action/status;
 */
 void messages(char *color, char *str, t_philo *philo)
 {
@@ -44,7 +46,7 @@ void	eat(t_philo *philo)
 	philo->death_time = get_time() + philo->data->time_to_die;
 	messages(GREEN, EATING, philo);
 	philo->n_eat_times++;
-	//ft_usleep(philo->data->time_to_eat); //! Purpose?
+	ft_usleep(philo->data->time_to_eat);
 	philo->eating = 0;
 	pthread_mutex_unlock(&philo->lock);
 	drop_forks(philo);
@@ -53,11 +55,14 @@ void	eat(t_philo *philo)
 /* only function where the philo->data->dead value is changed to 1, 
 except for the messages function where it sets it if its still 0
 WHY???????????????????????????????????????????????????????????????? */
-void	*meals_monitor(void *data_pointer)
+/* void	*meals_monitor(void *data_pointer)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *) data_pointer;
+	pthread_mutex_lock(&philo->data->write); //! not needed
+	printf("data val: %d", philo->data->dead); //! not needed
+	pthread_mutex_unlock(&philo->data->write); //! not needed
 	while (philo->data->dead == 0)
 	{
 		pthread_mutex_lock(&philo->lock);
@@ -66,6 +71,43 @@ void	*meals_monitor(void *data_pointer)
 		pthread_mutex_unlock(&philo->lock);
 	}
 	return ((void *)0);
+} */
+
+void *meals_monitor(void *data_pointer)
+{
+    t_philo *philo;
+
+	philo = (t_philo *) data_pointer;
+	pthread_mutex_lock(&philo->data->write);
+	printf("data val: %d", philo->data->dead);
+	pthread_mutex_unlock(&philo->data->write);
+	while (philo->data->dead == 0)
+	{
+		pthread_mutex_lock(&philo->lock);
+		if (philo->data->finished >= philo->data->n_philos)
+			philo->data->dead = 1;
+		pthread_mutex_unlock(&philo->lock);
+	}
+	return ((void *)0);
+   /*  philo = (t_philo *)data_pointer;
+    while (1)
+    {
+        pthread_mutex_lock(&philo->lock);
+        int total_meals = 0;
+        for (int i = 0; i < philo->data->n_philos; i++)
+        {
+            total_meals += philo->data->philo[i].n_eat_times;
+        }
+        if (total_meals >= philo->data->n_philos * philo->data->n_meals)
+        {
+            philo->data->dead = 1;
+            pthread_mutex_unlock(&philo->lock);
+            break; // Terminate the loop
+        }
+        pthread_mutex_unlock(&philo->lock);
+    }
+	usleep(1000);
+    return (NULL); */
 }
 
 /*responsible for monitoring philos state;
@@ -86,7 +128,9 @@ void	*supervisor(void *philo_pointer)
 		{
 			pthread_mutex_lock(&philo->data->lock);
 			philo->data->finished++; //! only initialized here
+			printf("%d\n", philo->data->finished);
 			philo->n_eat_times++;
+			printf("%d\n", philo->n_eat_times);
 			pthread_mutex_unlock(&philo->data->lock);
 		}
 		pthread_mutex_unlock(&philo->lock);
@@ -120,16 +164,19 @@ void	*routine(void *philo_pointer)
 	return (0);
 }
 
-//! input checks!
-int	main(int ac, char *av[])
+//! CASE ONE
+int	main(int ac, char **av)
 {
 	t_data data;
 
 	if (ac < 5 || ac > 6)
 		return (1);
+	if (valid_input(av))
+		return (1);
 	if (init_structs(&data, ac, av))
 		return (1);
 	if (handle_threads(&data))
 		return (1);
+	destroy_mutexes(&data);
 	return 0;
 }

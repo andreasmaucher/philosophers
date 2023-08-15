@@ -11,7 +11,8 @@
 # **************************************************************************** #
 
 NAME = philo
-SOURCES = main.c threads.c time.c utils.c initialization.c actions.c
+SOURCES = main.c threads.c time.c utils.c initialization.c actions.c \
+			error_cleanup.c
 OBJS = $(SOURCES:.c=.o)
 
 CC = cc -g -pthread

@@ -12,25 +12,13 @@
 
 # include "philo.h"
 
-//! try with adjustments
+/* different order for odd or even n of philos */
 void	take_forks(t_philo *philo)
 {
 	pthread_mutex_lock(philo->fork_r);
 	messages(YELLOW, TAKE_FORKS, philo);
 	pthread_mutex_lock(philo->fork_l);
 	messages(YELLOW, TAKE_FORKS, philo);
-	/* if (philo->id % 2 == 1) // Odd philosopher
-    {
-        pthread_mutex_lock(philo->fork_l);
-        messages(TAKE_FORKS, philo);
-        pthread_mutex_lock(philo->fork_r);
-    }
-    else // Even philosopher
-    {
-        pthread_mutex_lock(philo->fork_r);
-        messages(TAKE_FORKS, philo);
-        pthread_mutex_lock(philo->fork_l);
-    } */
 }
 
 /* unlocking both forks and setting the philo to sleep */

@@ -32,6 +32,6 @@ int	ft_usleep(t_ms time)
 
 	start = get_time();
 	while ((get_time() - start) < time)
-		usleep(1000);
+		usleep(time / 10);
 	return (0);
 }

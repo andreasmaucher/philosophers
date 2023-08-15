@@ -42,8 +42,7 @@
 # define ALLOC_ERR_3 "ERROR WHILE ALLOCATING PHILOS"
 # define ALLOC_ERR_2 "ERROR WHILE ALLOCATING FORKS"
 //	input_err
-# define ERR_IN_1 "INVALID INPUT CHARACTER"
-# define ERR_IN_2 "INVALID INPUT VALUES"
+# define INPUT_ERROR "INVALID INPUT"
 //	pthread_err
 # define TH_ERR "ERROR WHILE CREATING THREADS"
 # define JOIN_ERR "ERROR WHILE JOINING THREADS"
@@ -117,8 +116,10 @@ void	drop_forks(t_philo *philo);
 int	ft_atoi(const char *nptr);
 int	ft_usleep(t_ms time);
 int	ft_strcmp(char *s1, char *s2);
-int	input_checker(char **argv);
+int	valid_input(char **argv);
 int	error(char *str, t_data *data);
+void	destroy_mutexes(t_data *data);
+void	free_memory(t_data	*data);
 
 /*threads*/
 int	handle_threads(t_data *data);
