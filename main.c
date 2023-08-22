@@ -21,7 +21,7 @@ a message to the terminal based on that condition;
 */
 void messages(char *color, char *str, t_philo *philo)
 {
-    t_ms time;
+    u_int64_t time;
 
     pthread_mutex_lock(&philo->data->write);
     time = get_time() - philo->data->start_time;
@@ -30,7 +30,7 @@ void messages(char *color, char *str, t_philo *philo)
         printf("%s%lu %d %s\n", color, time, philo->id, str);
         philo->data->dead = 1;
     }
-    else if (philo->data->dead == 0)
+    else if (!philo->data->dead)
     {
         printf("%s%lu %d %s\n", color, time, philo->id, str);
     }

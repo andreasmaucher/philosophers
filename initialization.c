@@ -73,12 +73,12 @@ elements of the struct (id, forks, philo);
 initializing mutexes for write & lock struct elements */
 int init_data_struct(t_data *data, int ac, char **av)
 {
-	data->n_philos = ft_atoi(av[1]);
-	data->time_to_die = ft_atoi(av[2]);
-	data->time_to_eat = ft_atoi(av[3]);
-	data->time_to_sleep = ft_atoi(av[4]);
+	data->n_philos = (int) ft_atoi(av[1]);
+	data->time_to_die = (u_int64_t) ft_atoi(av[2]);
+	data->time_to_eat = (u_int64_t) ft_atoi(av[3]);
+	data->time_to_sleep = (u_int64_t) ft_atoi(av[4]);
 	if (ac == 6)
-		data->n_meals = ft_atoi(av[5]);
+		data->n_meals = (int) ft_atoi(av[5]);
 	else
 		data->n_meals = -1;
 	data->start_time = 0;

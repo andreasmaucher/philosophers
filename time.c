@@ -14,21 +14,19 @@
 
 /* tv stands for timeval and returns current time; returns time 
 in milliseconds*/
-t_ms	get_time(void)
+u_int64_t	get_time(void)
 {
 	struct timeval	tv;
-	t_ms 			time_in_ms;
 
 	if (gettimeofday(&tv, NULL))
-		return (0);
-	time_in_ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-	return (time_in_ms);
+		return (error("gettimeofday() FAILURE\n", NULL));
+	return ((tv.tv_sec * (u_int64_t)1000) + (tv.tv_usec / 1000));
 }
 
 /* don't fully understands why this works yet */
-int	ft_usleep(t_ms time)
+int	ft_usleep(u_int64_t time)
 {
-	t_ms	start;
+	u_int64_t	start;
 
 	start = get_time();
 	while ((get_time() - start) < time)

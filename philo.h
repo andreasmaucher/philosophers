@@ -66,7 +66,7 @@ enum ErrorCodes {
 
 struct	s_data;
 
-typedef long			t_ms;
+//typedef long			t_ms;
 
 typedef struct s_philo
 {
@@ -74,7 +74,7 @@ typedef struct s_philo
 	int				id;
 	int			philo_id;
 	int			n_eat_times;
-	t_ms		death_time;
+	u_int64_t		death_time;
 	pthread_t		supervisor;
 	int				status;
 	int				eating;
@@ -93,10 +93,10 @@ typedef struct s_data
 	int			n_meals;
 	int			dead;
 	int			finished;
-	t_ms	time_to_die;
-	t_ms	time_to_eat;
-	t_ms	time_to_sleep;
-	t_ms	start_time;
+	u_int64_t	time_to_die;
+	u_int64_t	time_to_eat;
+	u_int64_t	time_to_sleep;
+	u_int64_t	start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	write;
@@ -106,7 +106,7 @@ typedef struct s_data
 int	error(char *str, t_data *data);
 
 /*time*/
-t_ms	get_time(void);
+u_int64_t	get_time(void);
 
 /*actions*/
 void	take_forks(t_philo *philo);
@@ -114,7 +114,7 @@ void	drop_forks(t_philo *philo);
 
 /*utils*/
 int	ft_atoi(const char *nptr);
-int	ft_usleep(t_ms time);
+int	ft_usleep(u_int64_t time);
 int	ft_strcmp(char *s1, char *s2);
 int	valid_input(char **argv);
 int	error(char *str, t_data *data);
@@ -131,5 +131,6 @@ int init_structs(t_data *data, int ac, char **av);
 void	*routine(void *philo_pointer);
 void	*meals_monitor(void *data_pointer);
 void messages(char *color, char *str, t_philo *philo);
+void *death_monitor(void *data_pointer);
 
 #endif
