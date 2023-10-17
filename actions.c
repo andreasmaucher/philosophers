@@ -1,31 +1,64 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   actions.c                                          :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/11 13:26:48 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/11 13:26:49 by amaucher         ###   ########.fr       */
+/*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
+/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "philo.h"
+#include "philosophers.h"
 
-/* different order for odd or even n of philos */
-void	take_forks(t_philo *philo)
+void	thinking(t_philo *philo)
 {
-	pthread_mutex_lock(philo->fork_r);
-	messages(YELLOW, TAKE_FORKS, philo);
-	pthread_mutex_lock(philo->fork_l);
-	messages(YELLOW, TAKE_FORKS, philo);
+	message(BLUE, THINKING, philo);
 }
 
-/* unlocking both forks and setting the philo to sleep */
-void	drop_forks(t_philo *philo)
+void	sleeping(t_philo *philo)
 {
-	pthread_mutex_unlock(philo->fork_l);
-	pthread_mutex_unlock(philo->fork_r);
-	messages(GREY, SLEEPING, philo);
-	ft_usleep(philo->data->time_to_sleep);
+	message(GREY, SLEEPING, philo);
+	ft_usleep(philo->time_to_sleep);
+}
+
+/*
+mutexes for forks are locked, to ensure that one fork can only be used 
+by one philo at a time;
+in case of one single philo he can only pick up one fork and dies immediately, 
+since eating is only possible with two forks;
+*/
+void	take_forks(t_philo *philo)
+{
+	pthread_mutex_lock(philo->r_fork);
+	message(YELLOW, TAKE_FORKS, philo);
+	if (philo->n_philos == 1)
+	{
+		ft_usleep(philo->time_to_die);
+		pthread_mutex_unlock(philo->r_fork);
+		return ;
+	}
+	pthread_mutex_lock(philo->l_fork);
+	message(YELLOW, TAKE_FORKS, philo);
+}
+
+void	meals(t_philo *philos)
+{
+	pthread_mutex_lock(philos->meal_lock);
+	philos->last_meal = current_time();
+	philos->meals_counter++;
+	pthread_mutex_unlock(philos->meal_lock);
+}
+
+void	eating(t_philo *philos)
+{
+	take_forks(philos);
+	philos->eating = true;
+	message(GREEN, EATING, philos);
+	meals(philos);
+	ft_usleep(philos->time_to_eat);
+	philos->eating = false;
+	pthread_mutex_unlock(philos->l_fork);
+	pthread_mutex_unlock(philos->r_fork);
 }

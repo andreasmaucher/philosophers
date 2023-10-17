@@ -3,21 +3,23 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: amaucher <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/07/21 10:58:29 by amaucher          #+#    #+#              #
-#    Updated: 2023/07/21 10:58:31 by amaucher         ###   ########.fr        #
+#    Created: 2023/08/23 13:24:02 by amaucher          #+#    #+#              #
+#    Updated: 2023/08/23 13:24:07 by amaucher         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
-SOURCES = main.c threads.c time.c utils.c initialization.c actions.c \
-			error_cleanup.c
+
+SOURCES = main.c actions.c initialization.c threads.c utils.c input_check.c \
+		supervisor.c time.c \
+
 OBJS = $(SOURCES:.c=.o)
 
-CC = cc -g -pthread
+CC = cc -g
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -pthread
 
 all: $(NAME)	
 

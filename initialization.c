@@ -1,40 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   initialization.c                                   :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/25 09:40:21 by amaucher          #+#    #+#             */
-/*   Updated: 2023/07/25 09:40:23 by amaucher         ###   ########.fr       */
+/*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
+/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "philo.h"
+#include "philosophers.h"
 
-/* initializing the philo struct; id is incremented by +1 so that 
-the id of the first philo is 1; memory allocation already happened in the 
-init data struct function below*/
-int	init_philo_struct(t_data *data)
+//DONE
+void	init_philos_struct_basics(t_philo *philos, char **av, t_data *data, int i)
 {
-	int	i;
-
-	i = 0;
-	while (i < data->n_philos)
-	{
-		data->philo[i].data = data;
-		data->philo[i].id = i + 1;
-		data->philo[i].death_time = data->time_to_die; //! necessary, why not difference?
-		data->philo[i].n_eat_times = 0;
-		data->philo[i].eating = 0;
-		data->philo[i].status = 0;
-		pthread_mutex_init(&data->philo[i].lock, NULL); //! MUTEXES PHILO->LOCK in a loop!
-		i++; //! Why acces via data-> and not directly via philo struct?!
-	}
-	return (0);
+	philos[i].id = i + 1;
+	philos[i].eating = false;
+	philos[i].time_to_die = ft_atoi(av[2]);
+	philos[i].time_to_eat = ft_atoi(av[3]);
+	philos[i].time_to_sleep = ft_atoi(av[4]);
+	philos->n_philos = data->n_philos;
+	if (av[5])
+		philos[i].num_times_to_eat = ft_atoi(av[5]);
+	else
+		philos[i].num_times_to_eat = -1;
+	philos[i].meals_counter = 0;
+	philos->finished = 0;
+	philos[i].last_meal = current_time(); //! really needed?
+	philos[i].write_lock = &data->write_lock;
+	philos[i].dead_lock = &data->dead_lock;
+	philos[i].dead = &data->dead_flag;
+	philos[i].meal_lock = &data->meal_lock;
+	philos[i].start_time = current_time();
 }
 
-/*sets the left fork of the first philosopher (data->philo[0]) 
+//DONE
+/*
+sets the left fork of the first philosopher (data->philo[0]) 
 to point to the first fork in the data->forks array;
 sets the right fork of the first philosopher to point to the 
 last fork in the data->forks array. This establishes a circular 
@@ -42,68 +45,60 @@ arrangement since the last fork is adjacent to the first fork
 each philosopher is connected to its left and right neighbor, 
 and the last philosopher is connected back to the first one
 ex: philo 1 left fork is the right fork of philo 2;
-&data->forks[0] gets the address of the first mutex in the forks
-array; by using pointers only references of the actual mutexes are
-passed on rather than making copies of the mutexes*/
-int	init_forks(t_data *data)
+*/
+void	init_philos_struct(t_philo *philos, t_data *data, char **av)
 {
 	int	i;
 
 	i = 0;
 	while (i < data->n_philos)
 	{
-		pthread_mutex_init(&data->forks[i], NULL); //! MUTEXES FOR EACH FORK
+		init_philos_struct_basics(philos, av, data, i);
+		if (i == 0)
+		{
+			philos[i].l_fork = data->forks[i];
+			philos[i].r_fork = data->forks[data->n_philos - 1];
+		}
+		else
+		{
+			philos[i].l_fork = data->forks[i];
+			philos[i].r_fork = data->forks[i - 1];
+		}
 		i++;
 	}
+}
+
+//DONE
+/*
+the forks array does not need to be null-terminated, because it is an array of pointers to
+pthread_mutex_t and not an array of strings (null-terminated character array)
+*/
+void	init_data_struct(t_philo *philos, t_data *data, char **av)
+{
+	int	i;
+
 	i = 0;
-	data->philo[0].fork_l = &data->forks[0];
-	data->philo[0].fork_r = &data->forks[data->n_philos - 1];
-	i++;
+	data->dead_flag = false;
+	data->philos = philos;
+	data->n_philos = ft_atoi((av[1]));
+	data->forks = malloc(sizeof(pthread_mutex_t *) * data->n_philos);
 	while (i < data->n_philos)
 	{
-		data->philo[i].fork_l = &data->forks[i];
-		data->philo[i].fork_r = &data->forks[i - 1];
+		data->forks[i] = malloc(sizeof(pthread_mutex_t));
+		pthread_mutex_init(data->forks[i], NULL);
 		i++;
 	}
-	return (0);
+	pthread_mutex_init(&data->write_lock, NULL);
+	pthread_mutex_init(&data->meal_lock, NULL);
+	pthread_mutex_init(&data->dead_lock, NULL);
 }
 
-/* initializing the data struct, while allocating memory for the pointer
-elements of the struct (id, forks, philo);
-initializing mutexes for write & lock struct elements */
-int init_data_struct(t_data *data, int ac, char **av)
+//DONE
+/*
+initialization of all structs and fork mutexes;
+*/
+void	init_structs(t_philo *philos, t_data *data, char **av)
 {
-	data->n_philos = (int) ft_atoi(av[1]);
-	data->time_to_die = (u_int64_t) ft_atoi(av[2]);
-	data->time_to_eat = (u_int64_t) ft_atoi(av[3]);
-	data->time_to_sleep = (u_int64_t) ft_atoi(av[4]);
-	if (ac == 6)
-		data->n_meals = (int) ft_atoi(av[5]);
-	else
-		data->n_meals = -1;
-	data->start_time = 0;
-	data->dead = 0;
-	data->finished = 0;
-	data->id = malloc(sizeof(pthread_t) * data->n_philos);
-	if (data->id == NULL)
-		return (MEM_ALLOC_ERROR);
-	data->forks = malloc(sizeof(pthread_mutex_t) * data->n_philos);
-	if (data->forks == NULL)
-		return (MEM_ALLOC_ERROR);
-	data->philo = malloc(sizeof(t_philo) * data->n_philos);
-	if (data->philo == NULL)
-		return (MEM_ALLOC_ERROR);
-	pthread_mutex_init(&data->write, NULL); //! MUTEX DATA->WRITE
-	pthread_mutex_init(&data->lock, NULL); //! MUTEX DATA->LOCK
-	return (0);
-}
-
-int init_structs(t_data *data, int ac, char **av)
-{
-	if (init_data_struct(data, ac, av))
-		return (1);
-	if (init_forks(data))
-		return (1);
-	init_philo_struct(data);
-	return(0);
+	init_data_struct(philos, data, av);
+	init_philos_struct(philos, data, av);
 }

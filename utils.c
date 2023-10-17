@@ -1,18 +1,47 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/20 11:40:10 by amaucher          #+#    #+#             */
-/*   Updated: 2023/07/20 11:40:12 by amaucher         ###   ########.fr       */
+/*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
+/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "philo.h"
+#include "philosophers.h"
 
-/* own implementation of the atoi function */
+/*
+write lock to ensure only one thread can write to the terminal at once
+*/
+void	message(char *color, char *str, t_philo *philo)
+{
+	u_int64_t	time;
+
+	pthread_mutex_lock(philo->write_lock);
+	time = current_time() - philo->start_time;
+	if (check_dead_flag(philo) == false)
+		printf("%s%llu %d %s\n", color, time, philo->id, str);
+	pthread_mutex_unlock(philo->write_lock);
+}
+
+/*
+personal implementation of the standard strlen function
+*/
+size_t	ft_strlen(const char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
+
+/*
+personal implementation of the standard atoi function
+*/
 int	ft_atoi(const char *nptr)
 {
 	int	i;
@@ -40,14 +69,23 @@ int	ft_atoi(const char *nptr)
 	return (res * sign);
 }
 
-/* my own implementation of the strcmp function */
-int ft_strcmp(char *s1, char *s2)
+// Destroys all the mutexes
+//! need to properly free philo as well!
+//! do I need to free data->n_philos?
+int	free_and_destroy(int err_code, t_data *data)
 {
-	int i = 0;
-	
-	while(s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i])
-	{	
+	int	i;
+
+	i = 0;
+	pthread_mutex_destroy(&data->write_lock);
+	pthread_mutex_destroy(&data->meal_lock);
+	pthread_mutex_destroy(&data->dead_lock);
+	while (i < data->philos[0].n_philos)
+	{
+		pthread_mutex_destroy(data->forks[i]);
+		free((data->forks[i]));
 		i++;
 	}
-	return (s1[i] - s2[i]);
+	free(data->forks);
+	return (err_code);
 }
