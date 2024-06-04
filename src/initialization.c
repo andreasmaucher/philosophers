@@ -1,18 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   initialization.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: amaucher <amaucher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2024/06/04 22:11:18 by amaucher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "../includes/philosophers.h"
 
-//DONE
 void	init_philos_struct_basics(t_philo *philos, char **av, t_data *data, int i)
 {
 	philos[i].id = i + 1;
@@ -27,7 +26,7 @@ void	init_philos_struct_basics(t_philo *philos, char **av, t_data *data, int i)
 		philos[i].num_times_to_eat = -1;
 	philos[i].meals_counter = 0;
 	philos->finished = 0;
-	philos[i].last_meal = current_time(); //! really needed?
+	philos[i].last_meal = current_time();
 	philos[i].write_lock = &data->write_lock;
 	philos[i].dead_lock = &data->dead_lock;
 	philos[i].dead = &data->dead_flag;
@@ -35,7 +34,6 @@ void	init_philos_struct_basics(t_philo *philos, char **av, t_data *data, int i)
 	philos[i].start_time = current_time();
 }
 
-//DONE
 /*
 sets the left fork of the first philosopher (data->philo[0]) 
 to point to the first fork in the data->forks array;
@@ -68,7 +66,6 @@ void	init_philos_struct(t_philo *philos, t_data *data, char **av)
 	}
 }
 
-//DONE
 /*
 the forks array does not need to be null-terminated, because it is an array of pointers to
 pthread_mutex_t and not an array of strings (null-terminated character array)
@@ -93,7 +90,6 @@ void	init_data_struct(t_philo *philos, t_data *data, char **av)
 	pthread_mutex_init(&data->dead_lock, NULL);
 }
 
-//DONE
 /*
 initialization of all structs and fork mutexes;
 */

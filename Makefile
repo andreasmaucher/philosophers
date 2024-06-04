@@ -3,17 +3,18 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+         #
+#    By: amaucher <amaucher@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/23 13:24:02 by amaucher          #+#    #+#              #
-#    Updated: 2023/08/23 13:24:07 by amaucher         ###   ########.fr        #
+#    Updated: 2024/06/04 22:12:04 by amaucher         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-SOURCES = main.c actions.c initialization.c threads.c utils.c input_check.c \
-		supervisor.c time.c \
+SOURCES = ./src/main.c ./src/actions.c ./src/initialization.c \
+			./src/threads.c ./src/utils.c ./src/input_check.c \
+			./src/supervisor.c ./src/time.c \
 
 OBJS = $(SOURCES:.c=.o)
 

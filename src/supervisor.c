@@ -1,20 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   supervisor.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: amaucher <amaucher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2024/06/04 22:10:51 by amaucher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "../includes/philosophers.h"
 
-/*
-
-*/
 bool	check_if_dead(t_philo *philo, size_t time_to_die)
 {
 	pthread_mutex_lock(philo->meal_lock);
@@ -50,8 +47,6 @@ void	send_death_message(t_philo *philos)
 	message(RED, DIED, philos);
 }
 
-//! this means we are using the dead flag as termination and dont necessarily write a death message
-//! no death message in case of meals eaten reached
 void	set_dead_flag(t_philo *philos)
 {
 	pthread_mutex_lock(philos[0].dead_lock);
@@ -59,7 +54,6 @@ void	set_dead_flag(t_philo *philos)
 	pthread_mutex_unlock(philos[0].dead_lock);
 }
 
-//! does it have to be philos[0].dead_lock?
 /*
 supervisor thread that checks if a philosopher died or if they ate the required
 number of meals (if specified in input);

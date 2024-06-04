@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: amaucher <amaucher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2024/06/04 22:11:02 by amaucher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "../includes/philosophers.h"
 
-//DONE
 int	main(int ac, char **av)
 {
 	t_philo			*philos;
@@ -27,7 +26,7 @@ int	main(int ac, char **av)
 	philos = malloc(sizeof(t_philo) * ft_atoi(av[1]));
 	if (!philos)
 		return (MEM_ALLOC_ERROR);
-	memset(&data, 0, sizeof(t_data)); //! needed?
+	memset(&data, 0, sizeof(t_data));
 	init_structs(philos, &data, av);
 	create_threads(&data);
 	free_and_destroy(SUCCESS, &data);

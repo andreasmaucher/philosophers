@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: amaucher <amaucher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2024/06/04 22:09:23 by amaucher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "../includes/philosophers.h"
 
 /*
 write lock to ensure only one thread can write to the terminal at once
@@ -22,7 +22,7 @@ void	message(char *color, char *str, t_philo *philo)
 	pthread_mutex_lock(philo->write_lock);
 	time = current_time() - philo->start_time;
 	if (check_dead_flag(philo) == false)
-		printf("%s%llu %d %s\n", color, time, philo->id, str);
+		printf("%s%lu %d %s\n", color, time, philo->id, str);
 	pthread_mutex_unlock(philo->write_lock);
 }
 
@@ -70,8 +70,6 @@ int	ft_atoi(const char *nptr)
 }
 
 // Destroys all the mutexes
-//! need to properly free philo as well!
-//! do I need to free data->n_philos?
 int	free_and_destroy(int err_code, t_data *data)
 {
 	int	i;
